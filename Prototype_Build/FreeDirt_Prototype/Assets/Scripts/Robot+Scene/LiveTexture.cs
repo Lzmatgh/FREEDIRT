@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class LiveTexture : MonoBehaviour
 {
+    public Renderer LiveCam;
+    public Renderer MobileCam;
+
     void Start()
     {
         WebCamDevice[] devices = WebCamTexture.devices;
@@ -11,14 +14,19 @@ public class LiveTexture : MonoBehaviour
         // for debugging purposes, prints available devices to the console
         for (int i = 0; i < devices.Length; i++)
         {
-            print("Webcam available: " + devices[i].name);
+            print("Webcam available: " + devices[i].name + i);
         }
 
         Renderer rend = this.GetComponentInChildren<Renderer>();
 
-        // assuming the first available WebCam is desired
-        WebCamTexture tex = new WebCamTexture(devices[1].name, 1920, 1080, 30);
-        rend.material.mainTexture = tex;
-        tex.Play();
+        print("Webcam available: " + devices[0].name );
+        WebCamTexture cam = new WebCamTexture(devices[0].name, 1920, 1080, 30);
+        LiveCam.material.mainTexture = cam;
+        cam.Play();
+        
+        print("Webcam available: " + devices[1].name);
+        WebCamTexture mobile = new WebCamTexture(devices[1].name, 1920, 1080, 30);
+        MobileCam.material.mainTexture = mobile;
+        mobile.Play();
     }
 }
