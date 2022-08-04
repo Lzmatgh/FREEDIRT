@@ -40,7 +40,7 @@ public class TwitchChat : MonoBehaviour
         writer.WriteLine("NICK " + username); 
         writer.WriteLine("USER " + username + " 8 * : " + username); 
         writer.WriteLine("JOIN #" + channelName); 
-        writer.WriteLine("PRIVMSG #" + channelName + " :THE FREE DIRT EXPERIENCE");
+        //writer.WriteLine("PRIVMSG #" + channelName + " :THE FREE DIRT EXPERIENCE");
         writer.Flush();
         if(twitchClient.Connected) {
             print("Connected!");

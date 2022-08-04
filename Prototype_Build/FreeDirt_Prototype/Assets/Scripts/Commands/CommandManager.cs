@@ -37,17 +37,9 @@ public class CommandManager : MonoBehaviour
             "!m",
             "!camera",
             "!c",
-            "!color",
-            "!co"
+            "!turn"
         };
         return commands;
-    }
-
-    
-    // Listens to the Twitch Chat for a user message with a command denoted by '!'
-    public void Update()
-    {
-
     }
 
     public void ReadFromTwitch(ChatMessage chatMessage)
@@ -67,32 +59,6 @@ public class CommandManager : MonoBehaviour
             Debug.Log("No message Recieved");
         }
     }
-    
-    /*
-    // Takes in a chat message when one with a potential command is picked up with '!' and verifies its a command.
-    // It then sends off that command by parsing through the message string after the '!' and sending it to be executed.
-    public void testCommand(ChatMessage chatMessage)
-    {
-        validCommands = addCommands(validCommands);
-        if (validCommands.Contains(chatMessage.command)) {
-            inputCommand = new Command(chatMessage);
-            //inputCommand.args = ParseCommandArgs(chatMessage, inputCommand);
-            ExecuteCommand(inputCommand);
-        }
-    }
-    */
-    
-    // Breaks up the message after the '!' into the command and parameters for the command.
-    //public List<string> ParseCommandArgs(ChatMessage chatMessage, Command inputCommand)
-    //{
-    //    string[] splitMessage = chatMessage.message.Split();
-    //    if(splitMessage.Length > 1) {
-    //        for(int i = 0; i < splitMessage.Length; i++) {
-    //            inputCommand.args.Add(splitMessage[i]);
-    //        }
-    //    }
-    //    return inputCommand.args;
-    //}
 
     // Sends the command to the appropriate command class to be executed in the Unity scene. 
     public void ExecuteCommand(Command cmd)
@@ -118,6 +84,26 @@ public class CommandManager : MonoBehaviour
             }
         }
 
+        if (command == "!turn")
+        {
+            if (argCount == 1)
+            {
+                robotController.ExecuteTurn();
+            }
+            else if (argCount == 2)
+            {
+                robotController.ExecuteTurn(cmd.args[1]);
+            }
+            else if (argCount == 3)
+            {
+                robotController.ExecuteTurn(cmd.args[1], Int32.Parse(cmd.args[2]));
+            }
+            else
+            {
+                Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
+            }
+        }
+
         else if (command == "!camera") {
             //This will have to change if we make more than the SwitchCamera function. It should be set up to
             //change fairly quickly though. Remove the first cameraController.SwitchCamera() and add a 
@@ -139,79 +125,5 @@ public class CommandManager : MonoBehaviour
             }
             Debug.Log("!camera command activated.");
         }
-            
-        else if(command == "!color") {
-
-        }
     }
-
-    /*
-
-    public void WriteCommands()
-    {
-        print("Writing Commands");
-        string commandList = "Commands: \nChange Colors: \n!blue \n!red \nMovement: \n!bounce";
-        print(commandList);
-        chat.WriteToChat(commandList);
-    }
-
-    public void ColorBlue()
-    {
-        objectMaterial.color = Color.blue;
-    }
-
-    public void ColorRed()
-    {
-        objectMaterial.color = Color.red;
-    }
-
-    public void Bounce()
-    {
-        Rigidbody rb = ball.GetComponent<Rigidbody>();
-        bool grounded = true;
-        if(rb.velocity.y == 0){
-            grounded = true;
-        } else {
-            grounded = false;
-        }
-        if(grounded) {
-           rb.AddForce(new Vector3(0f, 10f, 0f), ForceMode.Impulse); 
-           grounded = false;
-        }
-    }
-
-    public int moveForce = 10;
-    public void Move(int dir) 
-    {
-        Rigidbody rb = ball.GetComponent<Rigidbody>();        
-        int x = 0;
-        int z = 0;
-        if(dir == 1){
-            x = moveForce;
-        } else if(dir == -1) {
-            x = -moveForce;
-        } else if(dir == 2) {
-            z = moveForce; 
-        } else if(dir == -2) {
-            z = -moveForce;
-        }
-
-        rb.AddForce(new Vector3(x, 0f, z), ForceMode.Impulse);
-
-    }
-
-    public Camera cam1;
-    public Camera cam2;
-    public void CameraSwitch()
-    {
-        if(cam1.enabled) {
-            cam2.enabled = true;
-            cam1.enabled = false;
-        }
-        else if(cam2.enabled){
-            cam1.enabled = true;
-            cam2.enabled = false;
-        }
-    }
-    */
 }

@@ -75,7 +75,7 @@ public class MoveRobot : MonoBehaviour
     {
         movable = false;
         rotatable = false;
-        Translate("backward", 0.25f);
+        DriveRobot("backward", 0.25f);
     }
 
     private void OnTriggerExit(Collider col)
@@ -85,7 +85,7 @@ public class MoveRobot : MonoBehaviour
     }
 
     /* Helper function for ExecuteMove() */
-    public void Translate(string dirString, float dist)
+    public void DriveRobot(string dirString, float dist)
     {
         if (dirString == "forward")
         {
@@ -101,7 +101,7 @@ public class MoveRobot : MonoBehaviour
     }
     
     /* Helper function for ExecuteMove() */
-    public void Rotate(string comRotateDirection, float degrees)
+    public void TurnRobot(string comRotateDirection, float degrees)
     {
         if(comRotateDirection == "right")
         {
@@ -122,14 +122,27 @@ public class MoveRobot : MonoBehaviour
         Debug.Log("ExecuteMove() - Direction: '" + direction + "' Units: " + increment);
         if (direction == "forward" || direction == "backward")
         {
-            Translate(direction, increment);
+            DriveRobot(direction, increment);
         }
         else if (direction == "left" || direction == "right")
         {
-            Rotate(direction, increment);
+            ExecuteTurn(direction, increment);
         }
         else {
             Debug.Log(direction+  " is not a valid input.");
+        }
+    }
+
+    public void ExecuteTurn(string direction = "right", float increment = 90)
+    {
+        Debug.Log("ExecuteMove() - Direction: '" + direction + "' Units: " + increment);
+        if (direction == "left" || direction == "right")
+        {
+            TurnRobot(direction, increment);
+        }
+        else
+        {
+            Debug.Log(direction + " is not a valid input.");
         }
     }
 }

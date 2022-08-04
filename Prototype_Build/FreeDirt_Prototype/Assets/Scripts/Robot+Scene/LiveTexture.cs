@@ -20,12 +20,12 @@ public class LiveTexture : MonoBehaviour
         Renderer rend = this.GetComponentInChildren<Renderer>();
 
         print("Webcam available: " + devices[0].name );
-        WebCamTexture cam = new WebCamTexture(devices[0].name, 1920, 1080, 30);
+        WebCamTexture cam = new WebCamTexture("NexiGo N60 FHD Webcam", 1920, 1080, 30);
         LiveCam.material.mainTexture = cam;
         cam.Play();
         
-        print("Webcam available: " + devices[1].name);
-        WebCamTexture mobile = new WebCamTexture(devices[1].name, 1920, 1080, 30);
+        print("Webcam available: " + devices[2].name);
+        WebCamTexture mobile = new WebCamTexture(devices[2].name, 1920, 1080, 30);
         MobileCam.material.mainTexture = mobile;
         mobile.Play();
     }
