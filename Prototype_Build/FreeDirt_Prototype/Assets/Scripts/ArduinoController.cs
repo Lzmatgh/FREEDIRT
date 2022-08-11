@@ -23,11 +23,11 @@ public class ArduinoController : MonoBehaviour
 
     void Update()
     {
-        while(stream.DataAvailable) {
-            string data = ReadSocket();
-            if(data == "Enter stuff here ") {
-
-            }
+        if(!stream.CanRead) {
+            ConnectArduino();
+        }
+        else {
+            ReadSocket();
         }
     }
 
@@ -45,12 +45,12 @@ public class ArduinoController : MonoBehaviour
         }
     }
 
-    public void WriteSocket(string writeLine)
+    public void WriteSocket(char writeChar)
     {
         if (!socketReady) {
             return;
         }
-        writer.Write(writeLine);
+        writer.Write(writeChar);
         writer.Flush();
     }
 
@@ -74,12 +74,5 @@ public class ArduinoController : MonoBehaviour
         reader.Close();
         stream.Close();
         socketReady = false;
-    }
-
-    public void MaintainConnection()
-    {
-        if (!stream.CanRead) {
-            ConnectArduino();
-        }
     }
 }
