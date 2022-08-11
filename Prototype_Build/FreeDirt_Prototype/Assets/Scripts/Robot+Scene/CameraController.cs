@@ -50,8 +50,7 @@ public class CameraController : MonoBehaviour
         }
         else {
             Debug.Log("User tried to switch the camera to an invalid number");
-        }
-        
+        } 
     }
 
 

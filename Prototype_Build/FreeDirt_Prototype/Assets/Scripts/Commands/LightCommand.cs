@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class LightCommand : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    Light lightGameObj = null;
+    int lightNum = 0;
+    string lightLoc = null;
+
+    public LightCommand(Light light, int num)
     {
-        
+        lightGameObj = light;
+        lightNum = num;
     }
 
-    // Update is called once per frame
-    void Update()
+    public new string ToString
     {
-        
+        get
+        {
+            string info = lightNum + " " + lightLoc;
+            return info;
+        }
     }
 }

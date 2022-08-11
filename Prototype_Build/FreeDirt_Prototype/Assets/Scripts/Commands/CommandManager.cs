@@ -13,6 +13,7 @@ public class CommandManager : MonoBehaviour
 {
     public MoveRobot robotController;
     public CameraController cameraController;
+    public LightController lightController;
     public TwitchChat twitchChat;
     public List<string> validCommands;
 
@@ -37,7 +38,12 @@ public class CommandManager : MonoBehaviour
             "!m",
             "!camera",
             "!c",
-            "!turn"
+            "!turn",
+            "!light",
+            "!l",
+            "!lightlevel",
+            "!ll",
+            "!level"
         };
         return commands;
     }
@@ -124,6 +130,22 @@ public class CommandManager : MonoBehaviour
                 //Reply to chat with camera list.
             }
             Debug.Log("!camera command activated.");
+        }
+        else if (command == "!light") {
+            if (argCount == 2) {
+                lightController.ToggleLight(Int32.Parse(cmd.args[1]));
+            }
+            else if (argCount == 3) {
+                lightController.ToggleLight(Int32.Parse(cmd.args[1]), cmd.args[2]);
+            }
+            else {
+                Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
+            }
+        }
+        else if (command == "!lightlevel") {
+            if (argCount == 2) {
+                lightController.LightLevel(Int32.Parse(cmd.args[1]));       
+            }
         }
     }
 }
