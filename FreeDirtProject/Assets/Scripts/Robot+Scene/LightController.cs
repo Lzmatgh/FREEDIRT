@@ -20,8 +20,8 @@ public class LightController : MonoBehaviour
     public void ToggleLight(int lightNum)
     {
         if (lightNum <= lightsList.Count && lightNum > 0) {
-            if (lightsList[lightNum].enabled == true) {
-                lightsList[lightNum].enabled = false;
+            if (lightsList[lightNum-1].enabled == true) {
+                lightsList[lightNum-1].enabled = false;
             }
             else {
                 lightsList[lightNum].enabled = true;
@@ -38,10 +38,10 @@ public class LightController : MonoBehaviour
     {
         if (lightNum <= lightsList.Count && lightNum > 0) {
             if (condition == "off") {
-                lightsList[lightNum].enabled = false;
+                lightsList[lightNum-1].enabled = false;
             }
             else if (condition == "on"){
-                lightsList[lightNum].enabled = true;
+                lightsList[lightNum-1].enabled = true;
             }
             else {
                 Debug.Log("User sent an invalid light conditon.");
@@ -63,7 +63,7 @@ public class LightController : MonoBehaviour
         //    adjustableLight.intensity = FLevel * .5f;
         //}
 
-        if(level >= 0 && level < lightLevels.Count) {
+        if(level >= 0 && level <= lightLevels.Count) {
             adjustableLight.intensity = lightLevels[level];
         }
     }

@@ -25,14 +25,28 @@ public class TwitchChat : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        reconnectAfter = 10.0f;
+        ReadConfig();
+        reconnectAfter = 2f;
         Connect();
+    }
+
+    public void ReadConfig()
+    {
+        print("Reading config file.");
+        StreamReader reader = new StreamReader("Assets/connection_info.txt");
+        channelName = reader.ReadLine();
+        username = reader.ReadLine();
+        password = reader.ReadLine();
+        reader.Close();
+        print(channelName);
+        print(username);
+        print(password);
     }
 
     // Connect instantiates twitchClient and connects Unity to the Twitch channel URL
     private void Connect()
     {
-        print("Connecting");
+        //print("Connecting");
         twitchClient = new TcpClient("irc.chat.twitch.tv", 6667); // 1        
         reader = new StreamReader(twitchClient.GetStream()); // 2
         writer = new StreamWriter(twitchClient.GetStream()); 
@@ -101,20 +115,11 @@ public class TwitchChat : MonoBehaviour
                 return chatMessage;
             }
             else {
-                print("Non-user sent message recieved: " + message);
+                //print("Non-user sent message recieved: " + message);
                 return null;
             }
         }
         return null;
-    }
-
-    public void WriteToChat(string message)
-    {  
-        writer.WriteLine("PRIVMSG #" + channelName + " :" + "Command List: !command !camera");
-        writer.WriteLine("PRIVMSG #" + channelName + " :" + "Colors: !blue !red");
-        writer.WriteLine("PRIVMSG #" + channelName + " :" + "Movement: !bounce !up !down !left !right");
-        writer.Flush();
-        print("SentCommandList");
     }
 
     // If the Twitch client isn't available it attempts to reconnect. 
