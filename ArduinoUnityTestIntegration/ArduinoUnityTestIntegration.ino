@@ -21,7 +21,7 @@ const char* password = "dolphintears";
 char tempChar = 0;
 // Create an instance of the server
 // specify the port to listen on as an argument
-WiFiServer server(80);
+WiFiServer server(5001);
 
 
 int input1 = 0; // pin0 input1
@@ -112,6 +112,23 @@ void loop() {
     seekCommand(client);
   }
 }
+
+ void printWifiStatus() {
+   // print the SSID of the network you're attached to:
+   Serial.print("SSID: ");
+   Serial.println(WiFi.SSID());
+ 
+   // print your WiFi shield's IP address:
+   IPAddress ip = WiFi.localIP();
+   Serial.print("IP Address: ");
+   Serial.println(ip);
+ 
+   // print the received signal strength:
+   long rssi = WiFi.RSSI();
+   Serial.print("signal strength (RSSI):");
+   Serial.print(rssi);
+   Serial.println(" dBm");
+ }
 
 void seekCommand(WiFiClient client)
 {

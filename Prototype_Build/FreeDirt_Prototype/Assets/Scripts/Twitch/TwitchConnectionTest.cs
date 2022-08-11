@@ -162,6 +162,7 @@ public class TwitchConnectionTest : MonoBehaviour
 // If the Twitch client isn't available it attempts to reconnect. 
     void Update()
     {
+        try {
         if (!twitchClient.Connected) {
             connectedTxt.text = "Disconnected";
             connectedTxt.color = Color.red;
@@ -171,6 +172,14 @@ public class TwitchConnectionTest : MonoBehaviour
         else {
             ReadChat();
         }
+        }
+        catch {
+
+        }
+        finally {
+
+        }
+
 
         if (twitchClient.Available == 0) {
             reconnectTimer += Time.deltaTime;

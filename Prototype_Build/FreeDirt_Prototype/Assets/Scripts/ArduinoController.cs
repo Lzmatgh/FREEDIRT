@@ -14,7 +14,7 @@ public class ArduinoController : MonoBehaviour
     StreamReader reader;
 
     public string host;
-    public Int32 port;
+    public Int32 port = 5001;
 
      void Start()
     {
@@ -28,6 +28,7 @@ public class ArduinoController : MonoBehaviour
         }
         else {
             ReadSocket();
+            print("Attempting to read socket.");
         }
     }
 
