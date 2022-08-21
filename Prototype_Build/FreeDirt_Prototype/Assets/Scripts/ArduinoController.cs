@@ -4,6 +4,10 @@ using UnityEngine;
 using System.IO;
 using System;
 using System.Net.Sockets;
+using System.Net;
+using System.Text;
+using System.Threading;
+using UnityEngine.Networking;
 
 public class ArduinoController : MonoBehaviour
 {
@@ -16,9 +20,61 @@ public class ArduinoController : MonoBehaviour
     public string host;
     public Int32 port = 5001;
 
-     void Start()
+    Thread m_Thread;
+    UdpClient m_Client;
+    public string ipAddress = "192.168.0.1";
+
+    void Start()
     {
-        ConnectArduino();
+        //ConnectArduino();
+        m_Thread = new Thread(new ThreadStart(ReceiveData));
+        m_Thread.IsBackground = true;
+        m_Thread.Start();
+    }
+
+    void ReceiveData()
+    {
+
+        try {
+
+            m_Client = new UdpClient(4001);
+            m_Client.EnableBroadcast = true;
+            while(true) {
+
+                IPEndPoint hostIP = new IPEndPoint(IPAddress.Any, 0);
+                byte[] data = m_Client.Receive(ref hostIP);
+                string returnData = Encoding.ASCII.GetString(data);
+
+                Debug.Log(returnData);
+            }
+        }
+        catch(Exception e) {
+            Debug.Log(e);
+        }
+    }
+
+    void SendOrder(string order)
+    {
+        var IP = IPAddress.Parse(ipAddress);
+
+        var udpClient1 = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        var sendEndPoint = new IPEndPoint(IP, port);
+
+
+        try {
+
+            //Sends a message to the host to which you have connected.
+            byte[] sendBytes = Encoding.ASCII.GetBytes(order);
+
+            udpClient1.SendTo(sendBytes, sendEndPoint);
+
+
+
+        }
+        catch(Exception e) {
+            Debug.Log(e.ToString());
+        }
+
     }
 
     void Update()
@@ -27,7 +83,7 @@ public class ArduinoController : MonoBehaviour
             ConnectArduino();
         }
         else {
-            ReadSocket();
+        //    ReadSocket();
             print("Attempting to read socket.");
         }
     }

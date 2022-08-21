@@ -34,15 +34,13 @@ public class CommandManager : MonoBehaviour
         List<string> commands = new List<string>
         {
             "!move",
-            "!m",
             "!camera",
-            "!c",
             "!turn",
             "!light",
-            "!l",
             "!lightlevel",
-            "!ll",
-            "!level"
+            "!level",
+            "!bright",
+            "!darken"
         };
         return commands;
     }
@@ -143,10 +141,22 @@ public class CommandManager : MonoBehaviour
                 Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
             }
         }
-        else if (command == "!lightlevel") {
+        else if (command == "!bright") {
             if (argCount == 2) {
-                lightController.LightLevel(Int32.Parse(cmd.args[1]));       
+                lightController.LightLevel(Int32.Parse(cmd.args[1]));
             }
+        }
+        else if (command == "!bright") {
+
+        }
+        else if(command == "!darken") {
+
+        }
+        else if(command == "!rain") {
+
+        }
+        else if(command == "!seed") {
+
         }
     }
 }

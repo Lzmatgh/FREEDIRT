@@ -9,16 +9,16 @@ using UnityEngine;
  * To add commands, the trigger string is added to the addCommands method list. Then add an ExecuteCommand line to trigger
  * the actual class for that command. Finally, create a class and method for the command to be carried out. 
  */
-public class CommandManager : MonoBehaviour 
+public class CommandManager : MonoBehaviour
 {
-    public MoveRobot robotController;
     public CameraController cameraController;
     public LightController lightController;
+    public EnvironmentController environmentController;
     public TwitchChat twitchChat;
     public List<string> validCommands;
 
     void Start()
-    {    
+    {
         validCommands = new List<string>();
         validCommands = addCommands();
         if(validCommands.Count > 0) {
@@ -35,23 +35,21 @@ public class CommandManager : MonoBehaviour
         List<string> commands = new List<string>
         {
             "!move",
-            "!m",
             "!camera",
-            "!c",
             "!turn",
             "!light",
-            "!l",
             "!lightlevel",
-            "!ll",
-            "!level"
+            "!level",
+            "!bright",
+            "!darken"
         };
         return commands;
     }
 
     public void ReadFromTwitch(ChatMessage chatMessage)
     {
-        if (chatMessage != null) {
-            if (validCommands.Contains(chatMessage.command)) {
+        if(chatMessage != null) {
+            if(validCommands.Contains(chatMessage.command)) {
                 Command cmdFromTwitch = new Command(chatMessage);
                 Debug.Log("Message with valid command recieved: " + cmdFromTwitch.message);
                 //Debug.Log("Twitch read message+command: " + cmdFromTwitch.message);
@@ -75,7 +73,8 @@ public class CommandManager : MonoBehaviour
 
         Debug.Log("User: " + user + " attempting to issue command: " + command + "...");
 
-        if (command == "!move") {
+        if(command == "!move") {
+            /*
             if (argCount == 1) {
                 robotController.ExecuteMove();
             }
@@ -108,17 +107,18 @@ public class CommandManager : MonoBehaviour
             {
                 Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
             }
+            */
         }
 
-        else if (command == "!camera") {
+        else if(command == "!camera") {
             //This will have to change if we make more than the SwitchCamera function. It should be set up to
             //change fairly quickly though. Remove the first cameraController.SwitchCamera() and add a 
             //condition to the argCount == 1 (&&....).
-            if (cmd.args[1] == "switch") {
-                if (argCount == 2) {
+            if(cmd.args[1] == "switch") {
+                if(argCount == 2) {
                     cameraController.SwitchCamera(1);
                 }
-                else if (argCount == 3) {
+                else if(argCount == 3) {
                     cameraController.SwitchCamera(Int32.Parse(cmd.args[2]));
                 }
                 else {
@@ -131,21 +131,43 @@ public class CommandManager : MonoBehaviour
             }
             Debug.Log("!camera command activated.");
         }
-        else if (command == "!light") {
-            if (argCount == 2) {
+        // !light will eventually be light spawning, not toggling. 
+        else if(command == "!light") {
+            if(argCount == 2) {
                 lightController.ToggleLight(Int32.Parse(cmd.args[1]));
             }
-            else if (argCount == 3) {
+            else if(argCount == 3) {
                 lightController.ToggleLight(Int32.Parse(cmd.args[1]), cmd.args[2]);
             }
             else {
                 Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
             }
         }
-        else if (command == "!lightlevel") {
-            if (argCount == 2) {
-                lightController.LightLevel(Int32.Parse(cmd.args[1]));       
+        else if(command == "!bright") {
+            if(argCount == 2) {
+                lightController.LightLevel(Int32.Parse(cmd.args[1]));
             }
+        }
+        else if(command == "!bright") {
+            if(argCount == 1) {
+                lightController.Brighten();
+            }
+        }
+        else if(command == "!darken") {
+            if(argCount == 1) {
+                lightController.Darken();
+            }
+        }
+        else if(command == "!rain") {
+            if(argCount == 1) {
+                environmentController.ToggleRain();
+            }
+            else if(argCount == 2) {
+                environmentController.ToggleRain(cmd.args[1]);
+            }
+        }
+        else if(command == "!seed") {
+
         }
     }
 }

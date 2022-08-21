@@ -101,7 +101,7 @@ public class TwitchChat : MonoBehaviour
                 return chatMessage;
             }
             else {
-                print("Non-user sent message recieved: " + message);
+                //print("Non-user sent message recieved: " + message);
                 return null;
             }
         }

@@ -35,8 +35,6 @@ public class MoveRobot : MonoBehaviour
     float rotateTime;
     int rotateDir;
     bool rotatable = true;
-    bool rotating = false;
-
     Rigidbody robotRB;
 
     void Start()

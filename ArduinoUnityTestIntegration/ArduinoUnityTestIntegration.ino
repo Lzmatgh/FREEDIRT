@@ -8,6 +8,7 @@
 */
 
 #include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
 
 #ifndef STASSID
 #define STASSID "your-ssid"
@@ -18,9 +19,13 @@
 //const char* password = "freethedirt";
 const char* ssid = "TheDolphinCriesAtMidnight";
 const char* password = "dolphintears";
+const int port = 4001;
 char tempChar = 0;
+
+
 // Create an instance of the server
 // specify the port to listen on as an argument
+
 WiFiServer server(5001);
 
 
@@ -34,8 +39,21 @@ int timer = 0;
 int lastTimer = 0;
 int checkInterval = 10000;
 
+char packetBuffer[255]; //buffer to hold incoming packet
+char  ReplyBuffer[] = "";       // a string to send back
+
+
 void setup() {
+  IPAddress ip(192, 175, 0, 20); 
+  IPAddress gateway(192, 175, 0, 1); 
+  IPAddress subnet(255, 255, 255, 0); 
+  IPAddress DNS(192, 175, 0, 1);
+
+  WiFi.config(ip, gateway, subnet, DNS);
+  delay(100);
+  
   Serial.begin(115200);
+  WiFi.begin(ssid, password);
 
   while (!Serial) {
     ;
@@ -78,85 +96,63 @@ void setup() {
 }
 
 void loop() {
-  //  digitalWrite(input2,LOW);  // low voltage
   // Check if a client has connected
   WiFiClient client = server.available();
   if (!client) {
     return;
   }
   Serial.println(F("new client"));
-  client.setTimeout(5000); // default is 1000
-
-  if (client) {
-    if (!prevConnected) {
-      client.flush();
-      Serial.println("Client has connected");
-      client.println("To client from server");
-      prevConnected = true;
-    }
-  }
-  else {
-    if (prevConnected) {    // if there has just been a client, set alreadyConnected to false and flash the lights off
-      prevConnected = false;
-
-    }
-    client.println("Off");  // tell Unity light is off
-    prevConnected = false;
-    if (timer - lastTimer > checkInterval) { // if the current time minus the last time is more than the check interval
-      Serial.println("No client available");
-      lastTimer = timer;
-    }
-  }
+  client.setTimeout(5000);
 
   if (client.available()) {
     seekCommand(client);
   }
+
+  int packetSize = Udp.parsePacket();
+  if(packetSize) {
+    IPAddress remoteIp = Udp.remoteIP();
+    Serial.print(remoteIp);
+    Serial.print(", port: ");
+    Serial.print(Udp.remotePort());
+
+    int len = Udp.read(packetBuffer, 255);
+    if (len > 0) {
+      packetBuffer[len] = 0;
+    }
+    Serial.println("Contents:");
+    Serial.println(packetBuffer);
+
+    char str(packetBuffer);
+  }
 }
 
- void printWifiStatus() {
-   // print the SSID of the network you're attached to:
-   Serial.print("SSID: ");
-   Serial.println(WiFi.SSID());
- 
-   // print your WiFi shield's IP address:
-   IPAddress ip = WiFi.localIP();
-   Serial.print("IP Address: ");
-   Serial.println(ip);
- 
-   // print the received signal strength:
-   long rssi = WiFi.RSSI();
-   Serial.print("signal strength (RSSI):");
-   Serial.print(rssi);
-   Serial.println(" dBm");
- }
-
-void seekCommand(WiFiClient client)
+void seekCommand(char tempChar)
 {
-   tempChar = client.read();
-    client.flush();
+   //tempChar = client.read();
+    //client.flush();
     if (tempChar == 's') {     //character is '0'
       Serial.print("Stop");
-      client.println("Stop");
+      //client.println("Stop");
       //Trigger a movement.
     }
     else if (tempChar == 'f') {   //character is '1'
       Serial.print("Forward");
-      client.println("Forward");
+      //client.println("Forward");
       //Trigger a movement.
     }
     else if (tempChar == 'b') {   //character is '2'
       Serial.print("Backward");
-      client.println("Backward");
+      //client.println("Backward");
       //Trigger a movement.
     }
     else if (tempChar == 'l') {   //character is '3'
       Serial.print("Left turn");
-      client.println("Left turn");
+      //client.println("Left turn");
       //Trigger a movement.
     }
     else if (tempChar == 'r') {   //character is '4'
       Serial.print("Right turn");
-      client.println("Right turn");
+      //client.println("Right turn");
       //Trigger a movement.
     }
     else {

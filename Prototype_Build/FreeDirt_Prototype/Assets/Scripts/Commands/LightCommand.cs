@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LightCommand : MonoBehaviour
+public class LightCommand
 {
     Light lightGameObj = null;
     int lightNum = 0;

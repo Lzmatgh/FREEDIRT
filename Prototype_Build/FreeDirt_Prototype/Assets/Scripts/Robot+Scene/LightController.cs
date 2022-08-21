@@ -67,4 +67,15 @@ public class LightController : MonoBehaviour
             adjustableLight.intensity = lightLevels[level];
         }
     }
+
+    public void Brighten() { 
+
+    }
+
+    public void Darken()
+    {
+
+    }
+
+
 }
