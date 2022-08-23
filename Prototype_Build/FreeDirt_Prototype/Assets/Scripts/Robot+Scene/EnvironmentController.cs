@@ -102,7 +102,7 @@ public class EnvironmentController : MonoBehaviour
         lightningLight.enabled = true;
         strikingTimer = 0.0f;
         lightningIncrement = (1 * Random.Range(0f, maxLightningIncrement));
-        print(lightningIncrement);
+        //print(lightningIncrement);
     }
 
 

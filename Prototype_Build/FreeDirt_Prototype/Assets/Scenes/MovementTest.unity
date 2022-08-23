@@ -996,7 +996,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 160098, guid: 69b40ef7ee16c834c844b3fa26e0fdda, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 470886, guid: 69b40ef7ee16c834c844b3fa26e0fdda, type: 3}
       propertyPath: m_RootOrder
@@ -1586,7 +1586,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraController: {fileID: 1660978509}
   lightController: {fileID: 1048899653}
-  environmentController: {fileID: 0}
+  environmentController: {fileID: 583633261}
   twitchChat: {fileID: 2124571356}
   validCommands: []
 --- !u!1 &1062528912

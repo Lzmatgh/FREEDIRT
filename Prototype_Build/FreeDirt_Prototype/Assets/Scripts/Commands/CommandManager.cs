@@ -41,7 +41,8 @@ public class CommandManager : MonoBehaviour
             "!lightlevel",
             "!level",
             "!bright",
-            "!darken"
+            "!darken",
+            "!rain"
         };
         return commands;
     }
@@ -143,7 +144,7 @@ public class CommandManager : MonoBehaviour
                 Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
             }
         }
-        else if(command == "!bright") {
+        else if(command == "!lightlevel") {
             if(argCount == 2) {
                 lightController.LightLevel(Int32.Parse(cmd.args[1]));
             }
