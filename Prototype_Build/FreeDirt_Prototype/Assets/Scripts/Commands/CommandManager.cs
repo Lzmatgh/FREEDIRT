@@ -40,7 +40,7 @@ public class CommandManager : MonoBehaviour
             "!light",
             "!lightlevel",
             "!level",
-            "!bright",
+            "!brighten",
             "!darken",
             "!rain"
         };
@@ -144,19 +144,12 @@ public class CommandManager : MonoBehaviour
                 Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
             }
         }
-        else if(command == "!lightlevel") {
+        else if(command == "!lightlevel" || command == "!brighten") {
             if(argCount == 2) {
-                lightController.LightLevel(Int32.Parse(cmd.args[1]));
+                lightController.SetLightLevel(Int32.Parse(cmd.args[1]));
             }
-        }
-        else if(command == "!bright") {
-            if(argCount == 1) {
-                lightController.Brighten();
-            }
-        }
-        else if(command == "!darken") {
-            if(argCount == 1) {
-                lightController.Darken();
+            else if(argCount == 1) {
+                lightController.CycleLightLevel();
             }
         }
         else if(command == "!rain") {
@@ -168,7 +161,10 @@ public class CommandManager : MonoBehaviour
             }
         }
         else if(command == "!seed") {
-
+            environmentController.DropSeed();
+        }
+        else {
+            Debug.Log("Invalid command recieved.");
         }
     }
 }

@@ -7,8 +7,12 @@ public class LightController : MonoBehaviour
     public List<Light> lightsList = new List<Light>();
     public Light adjustableLight;
     public List<float> lightLevels = new List<float>{ 0f, .5f, 1f, 1.5f, 2f };
+
+    int currentLevel = 0;
     private void Start()
     {
+        adjustableLight.intensity = lightLevels[2];
+        currentLevel = lightLevels.IndexOf(adjustableLight.intensity);
         int counter = 0;
         foreach(Light light in lightsList) {
             LightCommand lightCommand = new LightCommand(light, counter);
@@ -56,26 +60,26 @@ public class LightController : MonoBehaviour
     //and allow the chatter to enter a command at any level that is 
     //declared in the game scene. 0 will be off. 
 
-    public void LightLevel(int level)
+    public void SetLightLevel(int level)
     {
         float FLevel = (float) level;
-        //if(level >= 0 && level < 5) {
-        //    adjustableLight.intensity = FLevel * .5f;
-        //}
-
         if(level >= 0 && level < lightLevels.Count) {
             adjustableLight.intensity = lightLevels[level];
         }
+        currentLevel = lightLevels.IndexOf(adjustableLight.intensity);
     }
 
-    public void Brighten() { 
-
-    }
-
-    public void Darken()
+    //If no arguement is sent with the !brightness command, the light level
+    //cycles up until it reaches max and then it cycles back down. 
+    public void CycleLightLevel() 
     {
-
+        if(currentLevel < (lightLevels.Count - 1)) {
+            adjustableLight.intensity = lightLevels[(currentLevel + 1)];
+            currentLevel++;
+        }
+        else {
+            adjustableLight.intensity = lightLevels[0];
+            currentLevel = 0;
+        }
     }
-
-
 }

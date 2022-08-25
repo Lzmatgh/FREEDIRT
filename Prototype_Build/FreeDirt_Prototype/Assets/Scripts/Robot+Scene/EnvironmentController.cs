@@ -9,7 +9,7 @@ public class EnvironmentController : MonoBehaviour
     private float timer;
     private bool isRising = true;
     public float dayCycleHours = 8; //The total hour cycle. This is sun to sun up. 
-    public float[] cycleIntensity = { 0.1f, 0.2f, .5f, .8f, 1.0f}; //The stages of 'day time' intensity
+    public float[] cycleIntensity = { 0.1f, 0.2f, .5f, .8f, 1.0f }; //The stages of 'day time' intensity
     public float noonIntensity = 1f;
     public float nightIntensity = 0.1f;
     private int intensityCounter = 0;
@@ -25,6 +25,8 @@ public class EnvironmentController : MonoBehaviour
     public float maxLightningIncrement = 600; //Max seconds between last lightning flash and next.
     public float flashSpeed = 0.5f;
 
+    //Create 
+    public List<GameObject> seeds; 
     void Start()
     {
         lightningLight.enabled = false;
@@ -83,7 +85,7 @@ public class EnvironmentController : MonoBehaviour
             rainObject.SetActive(true);
         }
         else {
-            Debug.Log("Invalid state asked for.");
+            Debug.Log("Invalid rain state requested.");
         }
     }
 
@@ -138,5 +140,15 @@ public class EnvironmentController : MonoBehaviour
             }
         }
         sunLight.intensity = cycleIntensity[intensityCounter];
+    }
+
+    public void DropSeed()
+    {
+
+    }
+
+    void MakeSeed()
+    {
+
     }
 }
