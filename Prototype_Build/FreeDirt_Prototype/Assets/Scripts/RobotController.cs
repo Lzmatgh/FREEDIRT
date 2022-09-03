@@ -11,13 +11,6 @@ using Uduino;
 
 public class RobotController : MonoBehaviour
 {
-    public ArduinoController arduino;
-    public Button forwardBtn;
-    public Button backwardBtn;
-    public Button leftBtn;
-    public Button rightBtn;
-    public Button stopBtn;
-
     public Uduino.UduinoManager uduinoManager;
     private State high = State.HIGH;
     private State low = State.LOW;
@@ -36,11 +29,21 @@ public class RobotController : MonoBehaviour
 
     //Increments are measured in seconds.
     const int DEFAULT_INCREMENT = 5;
+    float moveTime = 0;
+    bool moving = false;
 
     //public void digitalWrite(int pin, State state = State.LOW, string bundle = null)
     private void Update()
     {
-
+        if (moveTime > 0) {
+            moveTime -= Time.deltaTime;
+            moving = true;
+        }
+        else if(moveTime <= 0 && moving == true){
+            Reset();
+            moveTime = 0;
+            moving = false;
+        }
     }
 
     private void Start()
@@ -56,17 +59,6 @@ public class RobotController : MonoBehaviour
         uduinoManager.digitalWrite(light1, high);
         uduinoManager.digitalWrite(light2, low);
         uduinoManager.digitalWrite(lightPmw, 155);
-    }
-
-    //Used to define actions when reaching the boundries of the space.
-    private void OnTriggerEnter(Collider other)
-    {
-        
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        
     }
 
     public void MoveForward()
@@ -118,7 +110,7 @@ public class RobotController : MonoBehaviour
     }
 
 
-    //Resets all pins to State.LOW
+    /* Resets all pins to State.LOW */
     public void Reset()
     {
         Debug.Log("Resetting");
@@ -154,9 +146,10 @@ public class RobotController : MonoBehaviour
         }
     }
 
+    /* Helper function for ExecuteMove() */
     public void DriveRobot(string moveDirection, float time)
     {
-        if(moveDirection == "foward") {
+        if(moveDirection == "forward") {
             MoveForward();
         }
         else if (moveDirection == "backward") {
@@ -165,6 +158,8 @@ public class RobotController : MonoBehaviour
         else {
             Debug.Log("Recieved invalid move direction.");
         }
+        moveTime = time;
+        moving = true;
         Debug.Log("Moved the robot " + moveDirection + " " + time + " units");
     }
 
@@ -180,6 +175,8 @@ public class RobotController : MonoBehaviour
         else {
             Debug.Log("Recieved invalid turn direction.");
         }
+        moveTime = time;
+        moving = true;
         Debug.Log("Rotated the robot " + rotateDirection + " " + time + " units");
     }
 }
