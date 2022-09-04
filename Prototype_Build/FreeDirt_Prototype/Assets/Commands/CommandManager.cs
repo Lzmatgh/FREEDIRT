@@ -75,7 +75,7 @@ public class CommandManager : MonoBehaviour
 
         Debug.Log("User: " + user + " attempting to issue command: " + command + "...");
 
-        if(command == "!move") {
+        if(command == "!move" || command == "!turn") {
             if (argCount == 1) {
                 robotController.ExecuteMove();
             }
@@ -89,28 +89,6 @@ public class CommandManager : MonoBehaviour
                 Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
             }
         }
-
-        if (command == "!turn")
-        {
-            if (argCount == 1)
-            {
-                robotController.ExecuteTurn();
-            }
-            else if (argCount == 2)
-            {
-                robotController.ExecuteTurn(cmd.args[1]);
-            }
-            else if (argCount == 3)
-            {
-                robotController.ExecuteTurn(cmd.args[1], Int32.Parse(cmd.args[2]));
-            }
-            else
-            {
-                Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
-            }
- 
-        }
-
         else if(command == "!camera") {
             //This will have to change if we make more than the SwitchCamera function. It should be set up to
             //change fairly quickly though. Remove the first cameraController.SwitchCamera() and add a 
