@@ -190,6 +190,7 @@ public class CommandManager : MonoBehaviour
         }
         else if(command == "!seed") {
             seedManager.CreateSeed();
+            robotController.DropSeed();
         }
         else {
             Debug.Log("Invalid command recieved.");

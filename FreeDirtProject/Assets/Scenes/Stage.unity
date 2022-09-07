@@ -835,6 +835,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a079ddea766d149a529aa7296660da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  robotController: {fileID: 740245169}
   lightsList:
   - {fileID: 1096276820}
   - {fileID: 418825517}
@@ -847,6 +848,7 @@ MonoBehaviour:
   - 1
   - 1.5
   - 2
+  robotLightLevels: 00000000320000006400000096000000c8000000fa000000
 --- !u!1 &610942128
 GameObject:
   m_ObjectHideFlags: 0

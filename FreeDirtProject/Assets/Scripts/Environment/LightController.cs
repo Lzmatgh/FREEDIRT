@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class LightController : MonoBehaviour
 {
+    public RobotController robotController;
     public List<Light> lightsList = new List<Light>();
     public Light adjustableLight;
     public List<float> lightLevels = new List<float>{ 0f, .5f, 1f, 1.5f, 2f };
-
+    public List<int> robotLightLevels = new List<int> { 0, 75, 125, 175, 225 };
     int currentLevel = 0;
+
     private void Start()
     {
         adjustableLight.intensity = lightLevels[2];
@@ -65,6 +67,7 @@ public class LightController : MonoBehaviour
         float FLevel = (float) level;
         if(level >= 0 && level < lightLevels.Count) {
             adjustableLight.intensity = lightLevels[level];
+            robotController.ChangeLightLevel(robotLightLevels[level]);
         }
         currentLevel = lightLevels.IndexOf(adjustableLight.intensity);
     }
@@ -75,10 +78,12 @@ public class LightController : MonoBehaviour
     {
         if(currentLevel < (lightLevels.Count - 1)) {
             adjustableLight.intensity = lightLevels[(currentLevel + 1)];
+            robotController.ChangeLightLevel(robotLightLevels[currentLevel + 1]);
             currentLevel++;
         }
         else {
             adjustableLight.intensity = lightLevels[0];
+            robotController.ChangeLightLevel(robotLightLevels[0]);
             currentLevel = 0;
         }
     }

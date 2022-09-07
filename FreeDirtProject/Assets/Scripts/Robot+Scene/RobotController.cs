@@ -124,10 +124,27 @@ public class RobotController : MonoBehaviour
         //will control the brightness, between 0-255. 
         uduinoManager.digitalWrite(light1, high);
         uduinoManager.digitalWrite(light2, low);
-        uduinoManager.digitalWrite(lightPmw, 155);
+        uduinoManager.digitalWrite(lightPmw, 150);
 
         timeUntilIdle = DEFAULT_TIME_TIL_IDLE;
         idleTimer = DEFAULT_IDLE_DURATION;
+    }
+
+    public void ChangeLightLevel(int level)
+    {
+        if(level >= 0) {
+            uduinoManager.digitalWrite(lightPmw, level);
+            Debug.Log("Change robot light PMW level: " + level);
+        }
+        else {
+            Debug.Log("Invalid lightlevel called.");
+        }
+    }
+
+    public void DropSeed()
+    {
+        // This is where the pin signals to activate the servo motor will go. 
+        Debug.Log("Dropping a seed from the robot.");
     }
 
     public void MoveForward()
