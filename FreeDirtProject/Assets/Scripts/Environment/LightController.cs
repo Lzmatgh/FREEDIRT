@@ -64,10 +64,10 @@ public class LightController : MonoBehaviour
 
     public void SetLightLevel(int level)
     {
-        float FLevel = (float) level;
         if(level >= 0 && level < lightLevels.Count) {
             adjustableLight.intensity = lightLevels[level];
             robotController.ChangeLightLevel(robotLightLevels[level]);
+            Debug.Log("Changing light level to: " + level);
         }
         currentLevel = lightLevels.IndexOf(adjustableLight.intensity);
     }

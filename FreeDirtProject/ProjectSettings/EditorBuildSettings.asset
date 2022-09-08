@@ -12,5 +12,5 @@ EditorBuildSettings:
     path: Assets/Scenes/Stage.unity
     guid: f0f8c13ab8e230e4eb90b0d0646e597f
   m_configObjects:
-    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: a805a6ddec456ae4981202dfc02e450b, type: 2}
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: cfe54272a1afa5f4486b68e33b56faf0, type: 2}
+    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: 867394e3854e4cd4da76a0956c95cb7e, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 919ca05d7e0eed84ca3bae6f5c2d25c2, type: 2}

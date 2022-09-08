@@ -1850,3 +1850,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uduinoManager: {fileID: 1643998516}
+  DEFAULT_TIME_TIL_IDLE: 10
+  DEFAULT_IDLE_DURATION: 3

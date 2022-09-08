@@ -27,6 +27,8 @@ public class RobotController : MonoBehaviour
     int light2 = 12; //D6
     int lightPmw = 10; //SD3
 
+    int seedMotor = 5; //D1
+
     //Increments are measured in seconds.
     const int DEFAULT_INCREMENT = 5;
     float moveTime = 0;
@@ -46,7 +48,8 @@ public class RobotController : MonoBehaviour
     int idleLightLevelCurrent = 150;
     int idleLightPulseLevelHigh = 150;
 
-
+    public float DEFAULT_TRANSTALTE_TIME = 5;
+    public float DEFAULT_ROTATE_TIME = 5;
     //public void digitalWrite(int pin, State state = State.LOW, string bundle = null)
     private void Update()
     {
@@ -99,14 +102,14 @@ public class RobotController : MonoBehaviour
 
     private void PulseIdleLight()
     {
-        if(lightTimer > 0 && dimming) {
-            lightTimer -= Time.deltaTime;
-            dimming = false;
-        }
-        if(!dimming) {
-            lightTimer += Time.deltaTime;
+        //if(lightTimer > 0 && dimming) {
+        //    lightTimer -= Time.deltaTime;
+        //    dimming = false;
+        //}
+        //if(!dimming) {
+        //    lightTimer += Time.deltaTime;
             
-        }
+        //}
 
     }
 
@@ -122,9 +125,11 @@ public class RobotController : MonoBehaviour
 
         //Set the light to the correct default outputs. Changing lightPmw
         //will control the brightness, between 0-255. 
+        uduinoManager.digitalWrite(light1, low);
+        uduinoManager.digitalWrite(light2, high);
         uduinoManager.digitalWrite(light1, high);
         uduinoManager.digitalWrite(light2, low);
-        uduinoManager.digitalWrite(lightPmw, 150);
+        uduinoManager.analogWrite(lightPmw, 150);
 
         timeUntilIdle = DEFAULT_TIME_TIL_IDLE;
         idleTimer = DEFAULT_IDLE_DURATION;
@@ -133,7 +138,7 @@ public class RobotController : MonoBehaviour
     public void ChangeLightLevel(int level)
     {
         if(level >= 0) {
-            uduinoManager.digitalWrite(lightPmw, level);
+            uduinoManager.analogWrite(lightPmw, level);
             Debug.Log("Change robot light PMW level: " + level);
         }
         else {
@@ -144,6 +149,7 @@ public class RobotController : MonoBehaviour
     public void DropSeed()
     {
         // This is where the pin signals to activate the servo motor will go. 
+        uduinoManager.analogWrite(seedMotor, 200);
         Debug.Log("Dropping a seed from the robot.");
     }
 
@@ -189,6 +195,7 @@ public class RobotController : MonoBehaviour
     public void MoveStop()
     {
         Debug.Log("Sending arduino Stop");
+
         uduinoManager.digitalWrite(leftForward, low);
         uduinoManager.digitalWrite(rightForward, low);
         uduinoManager.digitalWrite(leftBackward, low);
