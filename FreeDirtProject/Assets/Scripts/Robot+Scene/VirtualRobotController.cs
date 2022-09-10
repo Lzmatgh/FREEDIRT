@@ -39,6 +39,9 @@ public class VirtualRobotController : MonoBehaviour
     private Vector3 robotVelocity;
     private float axisMove;
     public float manualSpeed;
+
+    public const float DEFAULT_MOVE_UNITS = 2; //In seconds
+    public const float DEFAULT_ROTATE_UNITS = 15; //In degrees
     void Start()
     {
         robotRB = GetComponent<Rigidbody>();
@@ -120,7 +123,7 @@ public class VirtualRobotController : MonoBehaviour
     }
 
     // Executes
-    public void ExecuteMove(string direction = "forward", float increment = DEFAULT_INCREMENT)
+    public void ExecuteMove(string direction = "forward", float increment = DEFAULT_MOVE_UNITS)
     {
         Debug.Log("ExecuteMove() - Direction: '" + direction + "' Units: " + increment);
         if (direction == "forward" || direction == "backward")
@@ -136,7 +139,7 @@ public class VirtualRobotController : MonoBehaviour
         }
     }
 
-    public void ExecuteTurn(string direction = "right", float increment = 90)
+    public void ExecuteTurn(string direction = "right", float increment = DEFAULT_ROTATE_UNITS)
     {
         Debug.Log("ExecuteMove() - Direction: '" + direction + "' Units: " + increment);
         if (direction == "left" || direction == "right")

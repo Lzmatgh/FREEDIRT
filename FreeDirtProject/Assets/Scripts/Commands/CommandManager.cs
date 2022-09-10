@@ -2,7 +2,8 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
+using UnityEngine.UI;
 /*
  * The CommandManager is what takes the twitch commands, validates them, and sends them to the respective class to be executed.
  * 
@@ -20,16 +21,100 @@ public class CommandManager : MonoBehaviour
     public TwitchChat twitchChat;
     public List<string> validCommands;
     public bool testMovement = false;
+    public HashSet<string> moderators = new HashSet<string> ();
+    public HashSet<string> admins = new HashSet<string> { "stingreay99", "leahlipp" };
+
+    private Queue<Command> movementCommandQueue = new Queue<Command>();
+    private Queue<Command> generalCommandQueue = new Queue<Command>();
+    private List<string> queueStrings = new List<string>();
+    private Command nextCommand;
+    private Command newCommand;
+    public TMP_Text queuedCommands;
+    public float executeDelay = 2;
+
 
     void Start()
     {
         validCommands = new List<string>();
         validCommands = addCommands();
+        foreach(string admin in admins) {
+            addMods(admin);
+        }
         if(validCommands.Count > 0) {
             Debug.Log("Controller is accepting: '" + validCommands.Count + "' commands.");
         }
         else {
             Debug.Log("No commands marked as valid");
+        }
+        StartCoroutine(ExecuteMoveCommand());
+        StartCoroutine(ExecuteGeneralCommand());
+        StartCoroutine(updateCommandQueueDisplay());    
+    }
+
+    private void Update()
+    {
+        if(generalCommandQueue.Count > 0) {
+            ExecuteGeneralCommand();
+        }
+        if(movementCommandQueue.Count > 0) {
+            ExecuteMoveCommand();
+        }
+    }
+
+    IEnumerator updateCommandQueueDisplay()
+    {
+        while(true) {
+            queuedCommands.text = printCommandQueue();
+            yield return new WaitForSeconds(.5f);
+        }
+    }
+
+    IEnumerator ExecuteMoveCommand()
+    {
+        Command nextMoveCommand;
+        print("Starting movement coroutine,");
+        while(true) {
+            if(movementCommandQueue.Count > 0) {
+                nextMoveCommand = movementCommandQueue.Dequeue();
+                print(nextMoveCommand.args[0]);
+                if(nextMoveCommand != null) {
+                    print("Executing general command from queue.");
+                    //queuedCommands.text = printCommandQueue();
+                    queueStrings.Remove(nextMoveCommand.message);
+                    ExecuteCommand(nextMoveCommand);
+                    yield return new WaitForSeconds(executeDelay);
+                }
+                else {
+                    Debug.Log("Command is null.");
+                    yield return null;
+                }
+
+            }
+            yield return null;
+        }
+    }
+
+    IEnumerator ExecuteGeneralCommand()
+    {
+        Command nextGenCommand;
+        print("Starting general coroutine,");
+        while(true) {
+        if(generalCommandQueue.Count > 0) {
+                nextGenCommand = generalCommandQueue.Dequeue();
+            print(nextGenCommand.args[0]);
+            if(nextGenCommand != null) {
+                print("Executing general command from queue.");
+                    //queuedCommands.text = printCommandQueue();
+                    queueStrings.Remove(nextGenCommand.message);
+                    ExecuteCommand(nextGenCommand);
+                    yield return new WaitForSeconds(.25f);
+            }
+            else {
+                Debug.Log("Command is null.");
+                yield return null;
+            }
+            }
+            yield return null;
         }
     }
 
@@ -43,31 +128,82 @@ public class CommandManager : MonoBehaviour
             "!turn",
             "!light",
             "!lightlevel",
-            "!level",
             "!brighten",
-            "!darken",
-            "!rain",
-            "!seed"
+            "!seed",
+            "!commands"
         };
         return commands;
     }
 
-    public void ReadFromTwitch(ChatMessage chatMessage)
+    public string getCommands()
     {
-        if(chatMessage != null) {
+        string allCommands = "Valid Commands: ";
+        foreach(string s in validCommands) {
+            allCommands = allCommands + " [" + s + "] ";
+        }
+        Debug.Log(allCommands);
+        return allCommands;
+    }
+
+    private void addMods(string modName)
+    {
+        if(modName != null) {
+            moderators.Add(modName);
+            //twitchChat.WriteToChat("/mod " + modName);
+            Debug.Log("Adding mod: " + modName);
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        foreach(string s in moderators) {
+            if(s != null) {
+                twitchChat.WriteToChat("/unmod " + s);
+                Debug.Log("Unmodding: " + s);
+            }
+        }
+    }
+
+    private string printCommandQueue()
+    {
+        string qCommandString = "";
+        if(queueStrings.Count > 0 && queueStrings.Count < 6) {
+            foreach(string s in queueStrings) {
+                qCommandString += (s + "\n");
+            }
+        }
+        else if(queueStrings.Count >= 6) {
+
+            for(int i = 0; i < 6; i++) {
+                qCommandString += queueStrings[i] + "\n";
+            }
+        }
+
+        return qCommandString;
+    }
+
+    public void AddToCommandQueue(ChatMessage chatMessage)
+    {
             if(validCommands.Contains(chatMessage.command)) {
-                Command cmdFromTwitch = new Command(chatMessage);
-                Debug.Log("Message with valid command recieved: " + cmdFromTwitch.message);
+                newCommand = new Command(chatMessage);
+                Debug.Log("Message with valid command recieved: " + newCommand.message);
+                Debug.Log("Command: " + newCommand.args[0]);
+                queueStrings.Add(newCommand.message);
+                queuedCommands.text = printCommandQueue();
+            if(chatMessage.command == "!move" || newCommand.args[0] == "!turn" ) {
+                    movementCommandQueue.Enqueue(newCommand);
+                    Debug.Log("Adding to movement queue");
+                }
+                else {
+                    generalCommandQueue.Enqueue(newCommand);
+                    Debug.Log("Adding to general queue");
+                }
                 //Debug.Log("Twitch read message+command: " + cmdFromTwitch.message);
-                ExecuteCommand(cmdFromTwitch);
+                //ExecuteCommand(cmdFromTwitch);
             }
             else {
                 Debug.Log("Message with invalid command recieved.");
             }
-        }
-        else {
-            Debug.Log("No message Recieved");
-        }
     }
 
     // Sends the command to the appropriate command class to be executed in the Unity scene. 
@@ -78,7 +214,7 @@ public class CommandManager : MonoBehaviour
         string user = cmd.user;
 
         Debug.Log("User: " + user + " attempting to issue command: " + command + "...");
-
+        queuedCommands.text = printCommandQueue();
         if(command == "!move") {
             if(testMovement) {
                 if(argCount == 1) {
@@ -88,7 +224,10 @@ public class CommandManager : MonoBehaviour
                     virtualRobotController.ExecuteMove(cmd.args[1]);
                 }
                 else if(argCount == 3) {
-                    virtualRobotController.ExecuteMove(cmd.args[1], Int32.Parse(cmd.args[2]));
+                    if(admins.Contains(user)) {
+                        virtualRobotController.ExecuteMove(cmd.args[1], Int32.Parse(cmd.args[2]));
+                    }
+
                 }
                 else {
                     Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
@@ -102,7 +241,9 @@ public class CommandManager : MonoBehaviour
                     robotController.ExecuteMove(cmd.args[1]);
                 }
                 else if(argCount == 3) {
-                    robotController.ExecuteMove(cmd.args[1], Int32.Parse(cmd.args[2]));
+                    if(admins.Contains(user)) {
+                        robotController.ExecuteMove(cmd.args[1], Int32.Parse(cmd.args[2]));
+                    }
                 }
                 else {
                     Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
@@ -118,7 +259,9 @@ public class CommandManager : MonoBehaviour
                     virtualRobotController.ExecuteTurn(cmd.args[1]);
                 }
                 else if(argCount == 3) {
-                    virtualRobotController.ExecuteTurn(cmd.args[1], Int32.Parse(cmd.args[2]));
+                    if(admins.Contains(user)) {
+                        virtualRobotController.ExecuteTurn(cmd.args[1], Int32.Parse(cmd.args[2]));
+                    }
                 }
                 else {
                     Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
@@ -132,7 +275,9 @@ public class CommandManager : MonoBehaviour
                     robotController.ExecuteTurn(cmd.args[1]);
                 }
                 else if(argCount == 3) {
-                    robotController.ExecuteTurn(cmd.args[1], Int32.Parse(cmd.args[2]));
+                    if(admins.Contains(user)) {
+                        robotController.ExecuteTurn(cmd.args[1], Int32.Parse(cmd.args[2]));
+                    }
                 }
                 else {
                     Debug.LogError("Unexpected number of arguments (" + argCount + ") " + "for command: " + command);
@@ -191,6 +336,9 @@ public class CommandManager : MonoBehaviour
         else if(command == "!seed") {
             seedManager.CreateSeed();
             robotController.DropSeed();
+        }
+        else if(command == "!commands") {
+            twitchChat.WriteToChat(getCommands());
         }
         else {
             Debug.Log("Invalid command recieved.");

@@ -29,7 +29,7 @@ public class Command
     {
         string[] splitMessage = chatMessage.message.Split();
         Debug.Log("Parsing Commands: ");
-        if (splitMessage.Length > 0) {
+        if (splitMessage.Length >= 0) {
             for(int i = 0; i < splitMessage.Length; i++) {
                 this.args.Add(splitMessage[i]);
             }
@@ -40,7 +40,7 @@ public class Command
     public void PrintCommandArgs()
     {
         for (int i = 0; i < args.Count; i++) {
-            Debug.Log(args[i]);
+            Debug.Log(i + ": " + args[i]);
         }
     }
 

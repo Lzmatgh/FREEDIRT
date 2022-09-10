@@ -22,6 +22,8 @@ public class TwitchChat : MonoBehaviour
     public CommandManager manager;
     public ChatMessage message;
 
+    private float pingCounter = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,9 +53,9 @@ public class TwitchChat : MonoBehaviour
         reader = new StreamReader(twitchClient.GetStream()); // 2
         writer = new StreamWriter(twitchClient.GetStream()); 
         writer.WriteLine("PASS " + password); // 3
-        writer.WriteLine("NICK " + username); 
+        writer.WriteLine("NICK " + username.ToLower()); 
         writer.WriteLine("USER " + username + " 8 * : " + username); 
-        writer.WriteLine("JOIN #" + channelName); 
+        writer.WriteLine("JOIN #" + channelName.ToLower()); 
         //writer.WriteLine("PRIVMSG #" + channelName + " :THE FREE DIRT EXPERIENCE");
         writer.Flush();
         if(twitchClient.Connected) {
@@ -61,6 +63,13 @@ public class TwitchChat : MonoBehaviour
         }
     }
 
+    public void WriteToChat(string toMessage)
+    {
+        if(toMessage != null) {
+            writer.WriteLine("PRIVMSG #" + channelName + " : " + toMessage);
+            writer.Flush();
+        }
+    }
 
     // Checks if the Twitch data is available (>0) and gets a message. 
     // If the message is a PRIVMSG its user created and will print to console.
@@ -72,7 +81,7 @@ public class TwitchChat : MonoBehaviour
                 
             // Twitch will ping the program every 5 minutes and requires the response PONG or will disconnect
             if (message.Contains("PING")) {
-                writer.WriteLine("PONG");
+                writer.WriteLine("PONG: tmi.twitch.tv");
                 writer.Flush();
                 //return null;
             }
@@ -107,11 +116,10 @@ public class TwitchChat : MonoBehaviour
                 }
 
                 ChatMessage chatMessage = new ChatMessage(chatterName, message, command);
-                print("Chatter: " + chatMessage.user);
-                print("Message: " + chatMessage.message);
-                print("Command: " + chatMessage.command);
-
-                //manager.ActivateCommand(command);
+                Debug.Log("Chatter: " + chatMessage.user);
+                Debug.Log("Message: " + chatMessage.message);
+                Debug.Log("Command: " + chatMessage.command);
+                
                 return chatMessage;
             }
             else {
@@ -125,7 +133,12 @@ public class TwitchChat : MonoBehaviour
     // If the Twitch client isn't available it attempts to reconnect. 
     void Update() 
     {
-        if (!twitchClient.Connected) {
+        pingCounter += Time.deltaTime;
+        if(pingCounter > 45) {
+            writer.WriteLine("PING " + "irc.chat.twitch.tv");
+            pingCounter = 0;
+        }
+        if (!twitchClient.Connected || twitchClient == null) {
             Connect();
             print("Client not connected. attempting to connect");
         }
@@ -133,19 +146,10 @@ public class TwitchChat : MonoBehaviour
             ChatMessage chatMessage = new ChatMessage();
             chatMessage = ReadChat();
             if (chatMessage != null) {
-                print("A message has been recieved from Twitch");
-                manager.ReadFromTwitch(chatMessage);
+                manager.AddToCommandQueue(chatMessage);
             }
             //print("Attempting to read from Twitch");
         } 
-        
-        if (twitchClient.Available == 0) {
-            reconnectTimer += Time.deltaTime;
-        }
-        if (twitchClient.Available == 0 && reconnectTimer >= reconnectAfter) {
-            Connect();
-            print("Trying to make client available");
-            reconnectTimer = 0.0f;
-        }
     }
+
 }
