@@ -3,30 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Random = UnityEngine.Random;
+using TMPro;
 
 public class EnvironmentController : MonoBehaviour
 {
-    private float timer;
-    private bool isRising = true;
     public float dayCycleHours = 8; //The total hour cycle. This is sun to sun up. 
-    public float[] cycleIntensity = { 0.1f, 0.2f, .5f, .8f, 1.0f }; //The stages of 'day time' intensity
+    public float intensityIncrement = .01f;
+    private float intensityInterval = 0;
     public float noonIntensity = 1f;
     public float nightIntensity = 0.1f;
-    private int intensityCounter = 0;
+    private bool afterNoon = true;
     public Light sunLight;
+    public TMP_Text intensityText;
     
+    //Storm variables
     public GameObject rainObject;
     public Light lightningLight;
+    public float lightningIntensity = 1;
     private float lightningTimer = 0;
     private bool isRaining = true;
     private bool striking = false;
-    private float strikingTimer = 0;
     private float lightningIncrement; //Time between lightning flashes.
     public float maxLightningIncrement = 600; //Max seconds between last lightning flash and next.
-    public float flashSpeed = 0.5f;
 
-    //Create 
-    public List<GameObject> seeds; 
     void Start()
     {
         lightningLight.enabled = false;
@@ -34,28 +33,38 @@ public class EnvironmentController : MonoBehaviour
         print("Day cycle starting: " + dayCycleHours + " hours.");
         dayCycleHours = dayCycleHours / 2; //Converts the dayCycleHours to have the zenith point
         dayCycleHours = dayCycleHours * 3600; //Converts the dayCycleHours to seconds, which the timer is counting.
-        dayCycleHours = dayCycleHours / cycleIntensity.Length; //Creates the increment period between light intensity changes.
+        intensityInterval = dayCycleHours / ((noonIntensity - nightIntensity) /intensityIncrement) ; //How often to increment the sun intensity in seconds. 
+        StartCoroutine(DayCycle());
+        lightningIncrement = (1 * Random.Range(0f, maxLightningIncrement));
     }
 
     void Update()
     {
-        timer += Time.deltaTime;
-        lightningTimer += Time.deltaTime;
-        strikingTimer += Time.deltaTime;
-
-        if(timer >= dayCycleHours) {
-            LightCycle();
-            timer = 0;
-        }
         if(isRaining) {
-            if(lightningTimer >= lightningIncrement) {
-                LightningFlash();
-                lightningTimer = 0;
-            }
-            if(strikingTimer >= flashSpeed) {
-                lightningLight.enabled = false;
-            }
+            
         }
+
+        intensityText.text = sunLight.intensity + "";
+    }
+
+    private IEnumerator DayCycle()
+    {
+        while(true) {
+            if(afterNoon) {
+                sunLight.intensity -= intensityIncrement;
+                if(sunLight.intensity <= nightIntensity) {
+                    afterNoon = false;
+                }
+            }
+            else {
+                sunLight.intensity += intensityIncrement;
+                if(sunLight.intensity >= noonIntensity) {
+                    afterNoon = true;
+                }
+            }
+            yield return new WaitForSeconds(intensityInterval);
+        }
+        
     }
 
     //Takes  the !rain command with no argument to toggle it to the 
@@ -98,57 +107,30 @@ public class EnvironmentController : MonoBehaviour
         lightningTimer = 0;
     }
 
-    void LightningFlash()
+    IEnumerator LightningSequence()
     {
-        print("Lightening strike.");
-        lightningLight.enabled = true;
-        strikingTimer = 0.0f;
-        lightningIncrement = (1 * Random.Range(0f, maxLightningIncrement));
-        //print(lightningIncrement);
-    }
+        // Get half of the seconds (One half to get brighter and one to get darker)
+        while(lightningLight.intensity < lightningIntensity) {
 
-
-    //public IEnumerator LightningFlash()
-    //{
-    //    float waitTime = flashSpeed / 2;
-    //    // Get half of the seconds (One half to get brighter and one to get darker)
-    //    while(lightningLight.intensity < maxIntensity) {
-    //        lightningLight.intensity += Time.deltaTime / waitTime;        // Increase intensity
-    //        yield return null;
-    //    }
-    //    while(lightningLight.intensity > 0) {
-    //        lightningLight.intensity -= Time.deltaTime / waitTime;        //Decrease intensity
-    //        yield return null;
-    //    }
-    //    yield return null;
-    //}
-
-    void LightCycle()
-    {
-        //Adjusting daylight cycle.
-        //If isRising, light will brighten from 0 to 5.
-        if(isRising) {
-            intensityCounter++;
-            if(intensityCounter >= (cycleIntensity.Length - 1)) {
-                isRising = false;
-            }
         }
-        else { 
-            intensityCounter--;
-            if(intensityCounter <= 0) {
-                isRising = true;
-            }
+        while(lightningLight.intensity > 0) {
+
         }
-        sunLight.intensity = cycleIntensity[intensityCounter];
+        yield return null;
     }
 
-    public void DropSeed()
+    IEnumerator LightningFlash()
     {
-
+        while(striking) {
+            if(lightningLight.intensity == 0) {
+                striking = false;
+            }
+            else {
+                lightningLight.intensity -= 0.05f;
+            }
+            yield return new WaitForSeconds(0.01f);
+        }
+        yield return null;
     }
 
-    void MakeSeed()
-    {
-
-    }
 }
